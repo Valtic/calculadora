@@ -58,16 +58,19 @@ if menu == opciones_menu[0]: #HOME
     conn = st.connection('pets_db', type='sql')
 
     with conn.session as s:
-        st.markdown(f"Note that `s` is a `{type(s)}`")
-        s.execute(text('CREATE TABLE IF NOT EXISTS pet_owners (person TEXT, pet TEXT);'))
-        s.execute(text('DELETE FROM pet_owners;'))
-        pet_owners = {'jerry': 'fish', 'barbara': 'cat', 'alex': 'puppy'}
-        for k in pet_owners:
-            s.execute(text(
-                'INSERT INTO pet_owners (person, pet) VALUES (:owner, :pet);'),
-                params=dict(owner=k, pet=pet_owners[k])
-            )
-        s.commit()
+        try:
+            st.markdown(f"Note that `s` is a `{type(s)}`")
+            s.execute(text('CREATE TABLE IF NOT EXISTS pet_owners (person TEXT, pet TEXT);'))
+            s.execute(text('DELETE FROM pet_owners;'))
+            pet_owners = {'jerry': 'fish', 'barbara': 'cat', 'alex': 'puppy'}
+            for k in pet_owners:
+                s.execute(text(
+                    'INSERT INTO pet_owners (person, pet) VALUES (:owner, :pet);'),
+                    params=dict(owner=k, pet=pet_owners[k])
+                )
+            s.commit()
+        except:
+            st.error("Error al incializar la base de datos")
 
     pet_owners = conn.query('select * from pet_owners', ttl=timedelta(minutes=10))
     st.dataframe(pet_owners)
@@ -294,7 +297,7 @@ elif menu == opciones_menu[6]: #"Streamlit Web App Cap 2"
     option_3 = container.slider('Please select option 3')
     st.sidebar.warning('Elements outside of container will be displayed externally')
     container.info('**Option 3:** %s' % (option_3))
-    
+
     #Expander in main body
     st.subheader('Expander')
     with st.expander('Time'):
