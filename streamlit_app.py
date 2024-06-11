@@ -4,6 +4,24 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 from sqlalchemy.sql import text
+from PIL import Image
+
+icon=Image.open('favicon.ico')
+
+st.set_page_config(
+    page_title="Calc - Streamlit Web develop",
+    page_icon=icon,
+    layout='centered',
+    initial_sidebar_state='auto',
+    menu_items={
+        'Get Help':'https://streamlit.io/',
+        'About':'About your application: ** Hello World**'
+    }
+)
+st.sidebar.title("Seleccion")
+
+#mark = ' <div class="markdown-text-container stText" style="width: 698px;"> <footer><p></p></footer><div style="font-size: 12px;">  Hello world v 0.1</div> <div style="font-size: 12px;">Hello world LLC.</div> </div>' 
+#st.sidebar.markdown(mark, unsafe_allow_html=True)
 
 
 # Title of the app
@@ -26,7 +44,8 @@ opciones_menu=["Home", "Litros -> galones (us)",
                      "Galones -> litros",
                       "gpm (us) -> litros/hora",
                        "litros/h -> gpm(us)",
-                       "Streamlit Web App"]
+                       "Streamlit Web App Cap 2",
+                        "Streamlit Web App Cap 3"]
 
 # Sidebar menu for navigation
 menu = st.sidebar.selectbox("Selecciona una opción", opciones_menu)
@@ -87,7 +106,7 @@ elif menu == opciones_menu[3] or menu == opciones_menu[4]:
         st.info(f"Resultado: {litros_hora_:.2f} litros/hora son {galones_pmim:.2f} gpm (us).")
 
 #Web Application Development with Streamlit Develop and Deploy Secure and Scalable Web Applications 
-elif menu == opciones_menu[5]: #"Streamlit Web App"
+elif menu == opciones_menu[5]: #"Streamlit Web App Cap 2"
     #Ejercicios del libro
     st.header("Web Application Development with Streamlit")
 
@@ -191,3 +210,107 @@ elif menu == opciones_menu[5]: #"Streamlit Web App"
         st.write(data)
         st.line_chart(data)
 
+# Plot interactive Chart
+
+    st.header("Plot interantive Chart")
+    import plotly.graph_objects as go
+
+    df= pd.DataFrame(data={'Exam': ['Exam 1','Exam 2','Exam 3'],'Jessica':[77,76,87],'John':[56,97,95],'Alex':[87,82,93]})
+
+    fig= go.Figure(data=[
+                   go.Line(name='Jessica',x=df['Exam'],y=df['Jessica']),
+                   go.Line(name='John',x=df['Exam'],y=df['John']),  
+                   go.Line(name='Alex',x=df['Exam'],y=df['Alex']) ]) 
+
+    fig.update_layout( xaxis_title='exam',
+                      yaxis_title='score',
+                      legend_title='name')
+
+    st.plotly_chart(fig)
+
+    import plotly.express as px
+    program = st.sidebar.selectbox('Select program',['Dataframe Demo','Other Demo'])
+    code = st.sidebar.checkbox('Display code')
+    if program == 'Dataframe Demo':
+        df = px.data.stocks()
+        st.title('DataFrame Demo')
+        stocks = st.multiselect('Select stocks',df.columns[1:],
+        [df.columns[1]])
+        st.subheader('Stock value')
+        # Mutating the dataframe to keep selected columns only
+        st.write(df[['date'] + stocks].set_index('date'))
+        # Creating a Plotly timeseriesfig line chart
+        fig = px.line(df, x='date', y=stocks,hover_data={"date": "|%Y %b %d"}  )
+        st.write(fig)
+
+        if code:
+            st.code(
+            """
+            import streamlit as st
+            import pandas as pd
+            import plotly.express as px
+            df = px.data.stocks()
+            st.title('DataFrame demo')
+            program = st.sidebar.selectbox('Select
+            program',['Dataframe Demo'])
+            code = st.sidebar.checkbox('Display code')
+            stocks = st.multiselect('Select stocks',df.columns[1:],[df.
+            columns[1]])
+            st.subheader('Stock value')
+            st.write(df[['date'] + stocks].set_index('date'))
+            fig = px.line(df, x='date', y=stocks,
+            hover_data={"date": "|%Y %b %d"}
+            )
+            st.write(fig)
+            """
+            )
+    elif program == 'Other Demo':
+        st.title('Other Demo')
+        st.write("- TODO -")
+
+# CAP 3        
+elif menu == opciones_menu[6]: #"Streamlit Web App Cap 2"
+    #Ejercicios del libro
+    st.header("Web Application Development with Streamlit Cap 3- User Interface")
+
+    from datetime import datetime
+
+    #Expander in sidebar
+    st.sidebar.subheader('Expander')
+    with st.sidebar.expander('Time'):
+        time = datetime.now().strftime("%H:%M:%S")
+        st.write('**%s**' % (time))
+        #Columns in sidebar
+        st.sidebar.subheader('Columns')
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            option_1 = st.selectbox('Please select option 1',['A','B'])
+        with col2:
+            option_2 = st.radio('Please select option 2',['A','B'])
+
+    #Container in sidebar
+    container = st.sidebar.container()
+    container.subheader('Container')
+    option_3 = container.slider('Please select option 3')
+    st.sidebar.warning('Elements outside of container will be displayed externally')
+    container.info('**Option 3:** %s' % (option_3))
+    
+    #Expander in main body
+    st.subheader('Expander')
+    with st.expander('Time'):
+        time = datetime.now().strftime("%H:%M:%S")
+        st.write('**%s**' % (time))
+    #Columns in main body
+    st.subheader('Columns')
+    col1, col2 = st.columns(2)
+    with col1:
+        option_4 = st.selectbox('Please select option 4',['A','B'])
+    with col2:
+        option_5 = st.radio('Please select option 5',['A','B'])
+
+    #Container in main body
+    container = st.container()
+    container.subheader('Container')
+    option_6 = container.slider('Please select option 6')
+    st.warning('Elements outside of container will be displayed externally')
+    container.info('**Option 6:** %s' % (option_6))
